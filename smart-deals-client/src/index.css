@@ -2,3 +2,15 @@
  @plugin "daisyui" {
    themes: light --default;
  }
+
+ .linear-bg {
+  @apply bg-gradient-to-br from-[#632EE3] to-[#9F62F2];
+}
+
+.gradient-text {
+  @apply bg-gradient-to-br from-[#632EE3] to-[#9F62F2] bg-clip-text text-transparent;
+}
+
+.gradient-border {
+  @apply relative rounded-xl p-[2px] bg-gradient-to-br from-[#632EE3] to-[#9F62F2];
+}

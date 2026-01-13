@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 3000;
@@ -8,9 +9,7 @@ const port = process.env.PORT || 3000;
 app.use(cors())
 app.use(express.json())
 
-// smartDealDbUser
-// Gwi2a7p8Ynv1SVf4
-const uri = "mongodb+srv://smartDealDbUser:Gwi2a7p8Ynv1SVf4@cluster0.2q9t7lj.mongodb.net/?appName=Cluster0";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.2q9t7lj.mongodb.net/?appName=Cluster0`;
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -52,6 +51,9 @@ async function run() {
       
     })
 
+
+    //Product API
+    // _________________________________________________________ //
     //see all products
     app.get('/products', async(req,res) => {
       console.log(req.query)
@@ -107,6 +109,11 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/latest-products', async(req,res) => {
+      const cursor = productsCollection.find().sort({created_at : -1}).limit(6)
+      const result = await cursor.toArray()
+      res.send(result)
+    })
 
     //all bids api 
     app.get('/bids', async(req,res) => {
@@ -134,10 +141,19 @@ async function run() {
       res.send(result)
     })
 
+    //add new bids
     app.post('/bids', async(req,res) => {
       const newBid = req.body
-      const result = bidsCollection.insertOne(newBid)
-      res.send(newBid)
+      const result = await bidsCollection.insertOne(newBid)
+      res.send(result)
+    })
+
+    app.get('/products/bids/:productID', async(req,res) => {
+      const productID = req.params.productID
+      const query = { product : productID}
+      const cursor = bidsCollection.find(query).sort({bid_price : -1})
+      const result = await cursor.toArray()
+      res.send(result)
     })
 
     // Send a ping to confirm a successful connection
